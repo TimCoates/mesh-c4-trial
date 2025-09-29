@@ -6,26 +6,46 @@ specification {
 }
 
 model {
-  SenderClient = system 'MESH Client' {
+  SenderClient = system 'MESH Sending Client' {
     description 'System that sends over MESH.'
+    style {
+      color gray
+    }
     MESHSender = component 'MESH Sending Component' {
       description 'Component in the Sender that actually sends messages to MESH'
+      style {
+        icon tech:python
+        color slate
+      }
     }
   }
 
-  ReceiverClient = system 'MESH Recipient' {
+  ReceiverClient = system 'MESH Receiving Client' {
     description 'System that receives over MESH'
+    style {
+      color gray
+    }
     MESHReceiver = component 'MESH Receiving Component' {
       description 'Component that calls MESH to fetch messages'
+      style {
+        icon tech:csharp
+        color green
+      }
     }
   }
 
-  MESH = system 'MESH itself' {
+  MESH = system 'MESH Service' {
     description 'The MESH infrastructure'
+    link https://digital.nhs.uk/services/message-exchange-for-social-care-and-health-mesh 'Public service description'
 
     MESHAPI = container 'MESH API' {
       description 'The MESH http API'
       link https://digital.nhs.uk/restapi/oas/357490 'OAS file'
+
+      style {
+        icon tech:python
+        color amber
+      }
 
       Outbox = container 'Outbox' {
         description 'Methods for sending messages'
@@ -33,11 +53,13 @@ model {
         SendMessage = component 'Send Message: POST /messageexchange/{mailbox_id}/outbox' {
           description 'Use this endpoint to send a message via MESH. Use the POST command to your virtual outbox. Specify the message recipient in the request headers, with the message contained in the request body.'
           link https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#post-/messageexchange/-mailbox_id-/outbox 'API description'
+          technology 'REST API over HTTPS'
         }
 
         SendChunkedMessage = component 'Send Chunked Message: POST /messageexchange/{mailbox_id}/outbox/{message_id}/{chunk_number}' {
           description 'Use this endpoint to send a chunked message. The "Send Message" endpoint has a maximum single request message payload size of 100MB. However, you can send much larger messages (up to 20GB) by breaking up the message into chunks and transmitting it over multiple requests.'
           link https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#post-/messageexchange/-mailbox_id-/outbox/-message_id-/-chunk_number- 'API description'
+          technology 'REST API over HTTPS'
         }
       }
 
@@ -47,25 +69,30 @@ model {
         CheckInbox = component 'Check an Inbox: GET /messageexchange/{mailbox_id}/inbox' {
           description 'Use this endpoint to return the message identifier of messages in the mailbox inbox ready for download. Client systems MUST poll their assigned inbox a minimum of once a day and a maximum of once every five minutes for messages (unless there are more messages waiting to download).  A maximum of 500 message identifier are returned in every request. Continue the polling and download cycle until you empty the mailbox and you receive less than 500 messages in the response.'
           link https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#get-/messageexchange/-mailbox_id-/inbox 'API description'
+          technology 'REST API over HTTPS'
         }
 
         GetMessage = component 'GET Message: GET /messageexchange/{mailbox_id}/inbox/{message_id}' {
           description 'Use this endpoint to retrieve a message based on the message identifier obtained from the "Check Inbox" endpoint.'
           link https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#get-/messageexchange/-mailbox_id-/inbox/-message_id- 'API description'
+          technology 'REST API over HTTPS'
         }
 
         HeadMessage = component 'Head Message: HEAD /messageexchange/{mailbox_id}/inbox/{message_id}' {
           description 'Use this endpoint to retrieve a message metadata based on the message_id obtained from the "Check Inbox" endpoint.'
           link https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#head-/messageexchange/-mailbox_id-/inbox/-message_id- 'API description'
+          technology 'REST API over HTTPS'
         }
 
         AckMessage = component 'Acknowledge Message: PUT /messageexchange/{mailbox_id}/inbox/{message_id}/status/acknowledged' {
           description 'Use this endpoint to acknowledge the successful download of a message.'
           link https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#put-/messageexchange/-mailbox_id-/inbox/-message_id-/status/acknowledged 'API description'
+          technology 'REST API over HTTPS'
         }
 
         GetMessageChunk = component 'Get Message chunk: GET https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#get-/messageexchange/-mailbox_id-/inbox/-message_id-/-chunk_number-' {
           description 'Use this endpoint to download a chunked message. Initially, call the "Download Message" endpoint with the message identifier given by the "Check Inbox" endpoint as usual. When the message is chunked, the "Download message" endpoint response differs in two ways:  the response code is "206: Partial Content" (instead of "200: OK")  the response headers contain Mex-Chunk-Range: 1:n This endpoint is used to download the remaining n-1 chunks.'
+          technology 'REST API over HTTPS'
         }
       }
 
@@ -73,6 +100,7 @@ model {
         TrackOutbox = component 'Track Outbox: GET /messageexchange/{mailbox_id}/outbox/tracking' {
           description 'Use this endpoint to enquire about the status of messages sent from your outbox. When determining the frequency of the calling of this endpoint consider that MESH is asynchronous, and it might be some hours until the recipient downloads your message. You must not poll this endpoint frequently. The message identifier is the value returned in the response to a message upload. Do not use this endpoint to replace a business ack message. If the business process requires confirmation that the recipient has processed the message then send a business ACK over MESH. The convention is to use the same workflow identifier appended with _ACK.'
           link https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#get-/messageexchange/-mailbox_id-/outbox/tracking 'API description'
+          technology 'REST API over HTTPS'
         }
       }
 
@@ -81,14 +109,14 @@ model {
         LookupAddress = component 'Look up MESH address: GET /messageexchange/endpointlookup/{ods_code}/{workflow_id}' {
           description 'Use this endpoint to search for the mailbox of the organisation you want to send data to, using their unique Organisation Data Service (ODS) code, their MESH mailbox and the agreed workflow identifier for the data.'
           link https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#get-/messageexchange/endpointlookup/-ods_code-/-workflow_id- 'API description'
+          technology 'REST API over HTTPS'
         }
 
         LookupByWorkflow = component 'Lookup By Workflow GET /messageexchange/workflowsearch/{workflow_id}' {
           link https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#get-/messageexchange/workflowsearch/-workflow_id- 'API description'
+          technology 'REST API over HTTPS'
         }
       }
-
-
     }
   }
 

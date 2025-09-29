@@ -8,18 +8,12 @@ views {
   view of SenderClient { include * }
   view of ReceiverClient { include * }
 
-  view of MESH {
-    include *
-  }
+  view of MESH { include * }
 
-  view of MESH.MESHAPI {
-    include *
-  }
-
+  view of MESH.MESHAPI { include * }
   view of MESH.Outbox { include * }
   view of MESH.Inbox {include *}
   view of MESH.Tracking {include *}
   view of MESH.Lookup { include *}
-
 
 }
