@@ -8,10 +8,16 @@ specification {
 model {
   SenderClient = system 'MESH Client' {
     description 'System that sends over MESH.'
+    MESHSender = component 'MESH Sending Component' {
+      description 'Component in the Sender that actually sends messages to MESH'
+    }
   }
 
   ReceiverClient = system 'MESH Recipient' {
     description 'System that receives over MESH'
+    MESHReceiver = component 'MESH Receiving Component' {
+      description 'Component that calls MESH to fetch messages'
+    }
   }
 
   MESH = system 'MESH itself' {
@@ -19,6 +25,7 @@ model {
 
     MESHAPI = container 'MESH API' {
       description 'The MESH http API'
+      link https://digital.nhs.uk/restapi/oas/357490 'OAS file'
 
       Outbox = container 'Outbox' {
         description 'Methods for sending messages'
@@ -29,9 +36,8 @@ model {
         }
 
         SendChunkedMessage = component 'Send Chunked Message: POST /messageexchange/{mailbox_id}/outbox/{message_id}/{chunk_number}' {
-          description 'Use this endpoint to send a chunked message. The 'Send Message' endpoint has a maximum single request message payload size of 100MB. However, you can send much larger messages (up to 20GB) by breaking up the message into chunks and transmitting it over multiple requests.'
+          description 'Use this endpoint to send a chunked message. The "Send Message" endpoint has a maximum single request message payload size of 100MB. However, you can send much larger messages (up to 20GB) by breaking up the message into chunks and transmitting it over multiple requests.'
           link https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#post-/messageexchange/-mailbox_id-/outbox/-message_id-/-chunk_number- 'API description'
-          link https://digital.nhs.uk/restapi/oas/357490 'OAS file'
         }
       }
 
@@ -86,7 +92,7 @@ model {
     }
   }
 
-  SenderClient -> MESH.SendMessage 'Send Message'
-  ReceiverClient -> MESH.MESHAPI.Inbox.CheckInbox 'Check for Messages'
-  ReceiverClient -> MESH.MESHAPI.Inbox.GetMessage 'Get Message'
+  SenderClient.MESHSender -> MESH.SendMessage 'Send Message'
+  ReceiverClient.MESHReceiver -> MESH.MESHAPI.Inbox.CheckInbox 'Check for Messages'
+  ReceiverClient.MESHReceiver -> MESH.MESHAPI.Inbox.GetMessage 'Get Message'
 }

@@ -5,6 +5,9 @@ views {
     include *
   }
 
+  view of SenderClient { include * }
+  view of ReceiverClient { include * }
+
   view of MESH {
     include *
   }
