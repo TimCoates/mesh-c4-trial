@@ -16,4 +16,12 @@ views {
   view of MESH.Tracking {include *}
   view of MESH.Lookup { include *}
 
+  dynamic view dynamicexample {
+    title 'Dynamic View Example'
+    SenderClient.MESHSender -> MESH.MESHAPI.Outbox.SendMessage 'Sender sends message to MESH'
+    ReceiverClient.MESHReceiver -> MESH.MESHAPI.Inbox.CheckInbox 'Recipient checks for waiting messages'
+    ReceiverClient.MESHReceiver -> MESH.MESHAPI.Inbox.GetMessage 'Recipient sees message and retrieves it'
+    ReceiverClient.MESHReceiver -> MESH.MESHAPI.Inbox.AckMessage 'Once received, receiver acknowledges receipt.'
+    include ReceiverClient.MESHReceiver, MESH.MESHAPI.Outbox.SendMessage, MESH.MESHAPI.Inbox.CheckInbox, MESH.MESHAPI.Inbox.GetMessage, MESH.MESHAPI.Inbox.AckMessage, MESH.MESHAPI.Outbox, MESH.MESHAPI.Inbox, MESH.MESHAPI
+  }
 }

@@ -3,6 +3,7 @@ specification {
   element system
   element container
   element component
+  relationship REST
 }
 
 model {
@@ -136,8 +137,17 @@ model {
     }
   }
 
-  SenderClient.MESHSender -> MESH.SendMessage 'Send Message'
-  SecondSenderClient.MESHSender -> MESH.MESHAPI.Outbox.SendMessage 'Send Messages'
-  ReceiverClient.MESHReceiver -> MESH.MESHAPI.Inbox.CheckInbox 'Check for Messages'
-  ReceiverClient.MESHReceiver -> MESH.MESHAPI.Inbox.GetMessage 'Get Message'
+  SenderClient.MESHSender -[REST]-> MESH.SendMessage 'Send Discharge Summary Message using Workflow ID "XYZ999"' {
+    link https://nhsd-confluence.digital.nhs.uk/spaces/IPACS/pages/54734745/Sharing+the+Discharge+Summary+with+a+nominated+pharmacy+-+As+Is 'Confluence page'
+    navigateTo dynamicexample
+  }
+  SecondSenderClient.MESHSender -[REST]-> MESH.MESHAPI.Outbox.SendMessage 'Send Test Results Using Workflow ID "ABC123"' {
+    navigateTo dynamicexample
+  }
+  ReceiverClient.MESHReceiver -[REST]-> MESH.MESHAPI.Inbox.CheckInbox 'Check for Messages' {
+    navigateTo dynamicexample
+  }
+  ReceiverClient.MESHReceiver -[REST]-> MESH.MESHAPI.Inbox.GetMessage 'Get Message' {
+    navigateTo dynamicexample
+  }
 }
