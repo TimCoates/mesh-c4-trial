@@ -20,6 +20,20 @@ model {
     }
   }
 
+  SecondSenderClient = system 'MESH Sending Client' {
+      description 'ANOTHER arbitrary system that sends messages over MESH.'
+    style {
+      color indigo
+    }
+    MESHSender = component 'MESH Sending Component' {
+      description 'Component in the Sender that actually sends messages to MESH. This makes the necessary http requests and handles responses.'
+      style {
+        icon tech:python
+        color slate
+      }
+    }
+  }
+
   ReceiverClient = system 'MESH Receiving Client' {
     description 'An arbitrary system that receives messages over MESH'
     style {
@@ -123,6 +137,7 @@ model {
   }
 
   SenderClient.MESHSender -> MESH.SendMessage 'Send Message'
+  SecondSenderClient.MESHSender -> MESH.MESHAPI.Outbox.SendMessage 'Send Messages'
   ReceiverClient.MESHReceiver -> MESH.MESHAPI.Inbox.CheckInbox 'Check for Messages'
   ReceiverClient.MESHReceiver -> MESH.MESHAPI.Inbox.GetMessage 'Get Message'
 }
