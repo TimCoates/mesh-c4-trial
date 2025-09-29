@@ -7,12 +7,12 @@ specification {
 
 model {
   SenderClient = system 'MESH Sending Client' {
-    description 'System that sends over MESH.'
+    description 'An arbitrary system that sends messages over MESH.'
     style {
       color gray
     }
     MESHSender = component 'MESH Sending Component' {
-      description 'Component in the Sender that actually sends messages to MESH'
+      description 'Component in the Sender that actually sends messages to MESH. This makes the necessary http requests and handles responses.'
       style {
         icon tech:python
         color slate
@@ -21,12 +21,12 @@ model {
   }
 
   ReceiverClient = system 'MESH Receiving Client' {
-    description 'System that receives over MESH'
+    description 'An arbitrary system that receives messages over MESH'
     style {
       color gray
     }
     MESHReceiver = component 'MESH Receiving Component' {
-      description 'Component that calls MESH to fetch messages'
+      description 'Component that calls MESH to fetch messages. This makes the necessary http requests and handles responses.'
       style {
         icon tech:csharp
         color green
@@ -37,10 +37,12 @@ model {
   MESH = system 'MESH Service' {
     description 'The MESH infrastructure'
     link https://digital.nhs.uk/services/message-exchange-for-social-care-and-health-mesh 'Public service description'
+    link https://nhsd-confluence.digital.nhs.uk/spaces/MESH/pages/649346088/Message+Exchange+for+Social+Care+and+Health+MESH 'Confluence Space'
 
     MESHAPI = container 'MESH API' {
       description 'The MESH http API'
       link https://digital.nhs.uk/restapi/oas/357490 'OAS file'
+      link https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api 'API Description'
 
       style {
         icon tech:python
