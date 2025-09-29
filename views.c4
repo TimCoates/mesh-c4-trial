@@ -11,9 +11,13 @@ views {
   view of MESH { include * }
 
   view of MESH.MESHAPI { include * }
-  view of MESH.Outbox { include * }
-  view of MESH.Inbox {include *}
-  view of MESH.Tracking {include *}
+  view of MESH.Outbox { include MESH, MESH.MESHAPI, MESH.MESHAPI.Outbox, MESH.MESHAPI.Outbox.SendMessage, MESH.MESHAPI.Outbox.SendChunkedMessage }
+  view of MESH.Inbox {
+    include MESH, MESH.MESHAPI, MESH.MESHAPI.Inbox, MESH.MESHAPI.Inbox.CheckInbox, MESH.MESHAPI.Inbox.GetMessage, MESH.MESHAPI.Inbox.GetMessageChunk
+  }
+  view of MESH.Tracking {
+    include MESH, MESH.MESHAPI, MESH.MESHAPI.Tracking, MESH.MESHAPI.Tracking.TrackOutbox
+  }
   view of MESH.Lookup { include *}
 
   dynamic view dynamicexample {
