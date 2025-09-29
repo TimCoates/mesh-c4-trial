@@ -1,0 +1,22 @@
+
+views {
+  view index {
+    description 'An initial very high level diagram, showing how the User uses the NHS App.'
+    include *
+  }
+
+  view of MESH {
+    include *
+  }
+
+  view of MESH.MESHAPI {
+    include *
+  }
+
+  view of MESH.Outbox { include * }
+  view of MESH.Inbox {include *}
+  view of MESH.Tracking {include *}
+  view of MESH.Lookup { include *}
+
+
+}
