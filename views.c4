@@ -22,10 +22,18 @@ views {
 
   dynamic view dynamicexample {
     title 'Dynamic View Example'
-    SenderClient.MESHSender -> MESH.MESHAPI.Outbox.SendMessage 'Sender sends message to MESH (POST)' { color red }
-    ReceiverClient.MESHReceiver -> MESH.MESHAPI.Inbox.CheckInbox 'Recipient checks for any waiting messages (GET)' { color green }
-    ReceiverClient.MESHReceiver -> MESH.MESHAPI.Inbox.GetMessage 'Recipient sees message and fetches it (GET)' { color green }
-    ReceiverClient.MESHReceiver -> MESH.MESHAPI.Inbox.AckMessage 'Once received, receiver acknowledges receipt (PUT)' {color amber }
+    SenderClient.MESHSender -> MESH.MESHAPI.Outbox.SendMessage 'Sender sends message to MESH\nPOST' { color red line solid }
+    MESH.MESHAPI.Outbox.SendMessage -> SenderClient.MESHSender '202 Accepted\nClose connection' {color red line dashed }
+
+    ReceiverClient.MESHReceiver -> MESH.MESHAPI.Inbox.CheckInbox 'Recipient checks for any waiting messages\nGET' { color green line solid}
+    MESH.MESHAPI.Inbox.CheckInbox -> ReceiverClient.MESHReceiver '200 OK\n{ "messages": ["ABCDEF"]\nClose connection' {color green line dashed }
+
+    ReceiverClient.MESHReceiver -> MESH.MESHAPI.Inbox.GetMessage 'Recipient sees message ABCDEF and fetches it\nGET /ABCDEF' { line solid color green }
+    MESH.MESHAPI.Inbox.GetMessage -> ReceiverClient.MESHReceiver '200 OK\nMessage body\nClose connection' { color green line dashed }
+
+    ReceiverClient.MESHReceiver -> MESH.MESHAPI.Inbox.AckMessage 'Once received, receiver acknowledges receipt\nPUT /ABCDEF/status/acknowledged' { line solid color amber }
+    MESH.MESHAPI.Inbox.GetMessage -> ReceiverClient.MESHReceiver '200 OK' { color green line dashed }
+
     include MESH, ReceiverClient.MESHReceiver, MESH.MESHAPI.Outbox.SendMessage, MESH.MESHAPI.Inbox.CheckInbox, MESH.MESHAPI.Inbox.GetMessage, MESH.MESHAPI.Inbox.AckMessage, MESH.MESHAPI.Outbox, MESH.MESHAPI.Inbox, MESH.MESHAPI
   }
 }
