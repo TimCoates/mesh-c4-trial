@@ -1,0 +1,36 @@
+views "Patterns / Pub-Sub" {
+    view pubsub {
+        include publisher, publisher.publish_module, subscriber, subscriber.event_listening_module, ems, ems.pubsub_module, ems.subscriptions
+    }
+
+    dynamic view pubsub_subscribe {
+        title "Subscribe details"
+        subscriber.event_listening_module -> ems.pubsub_module "Subscribe (criteria)" {
+          description "Subscriber asks to be notified about events matching certain criteria"
+          line solid
+        }
+
+        ems.pubsub_module -> ems.subscriptions "Save subscription" {
+          description "Save subscription (assumes a database)"
+        }
+
+        ems.pubsub_module -> subscriber.event_listening_module "201 Created" {}
+
+        include subscriber, subscriber.event_listening_module, ems, ems.pubsub_module, ems.subscriptions
+    }
+
+    dynamic view pubsub_publish {
+      title "Publish details"
+
+      publisher.publish_module -> ems.pubsub_module "New Event emitted" {
+        line solid
+      }
+      ems.pubsub_module -> ems.subscriptions "Find subscribers"
+
+      ems.pubsub_module -> subscriber.event_listening_module "For each subscriber: Push event" {
+        line solid
+      }
+
+      include publisher, publisher.publish_module, subscriber, subscriber.event_listening_module, ems, ems.pubsub_module, ems.subscriptions
+    }
+}

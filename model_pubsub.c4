@@ -1,0 +1,41 @@
+model {
+    // Pub Sub
+    publisher = system "Event publisher" {
+        publish_module = component "Publishing module"
+    }
+
+    subscriber = system "Subscriber to events" {
+        event_listening_module = component "Event listening module"
+    }
+
+    ems = system "Event Management System" {
+        pubsub_module = component "Pub-Sub Module"
+        subscriptions = component "Subscription database" {
+            style {
+                shape cylinder
+            }
+        }
+    }
+
+    // Pub Sub Relationships
+    // Subscribe
+    subscriber.event_listening_module -> ems.pubsub_module "Subscribe (criteria)" {
+        description "Subscriber asks to be notified about events matching certain criteria"
+        navigateTo pubsub_subscribe
+        style {line solid}
+    }
+    ems.pubsub_module -> ems.subscriptions "Write subscription" {
+        style {
+            line solid 
+        }
+    }
+
+    // Event
+    publisher.publish_module -> ems.pubsub_module "New Event" {
+        description "New event is emitted from the publisher to the Event Management System"
+    }
+
+    // Distribution
+    ems.pubsub_module -> subscriber.event_listening_module "Event" {
+    }
+}

@@ -2,7 +2,7 @@
 views {
   view index {
     description 'An initial very high level diagram, showing how the User uses the NHS App.'
-    include *
+    include MESH, MESH.MESHAPI, SenderClient.MESHSender, ReceiverClient.MESHReceiver
   }
 
   view of SenderClient { include * }

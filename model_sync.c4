@@ -1,0 +1,42 @@
+model {
+
+    client = system "System A" {
+        summary "Client system"
+        description "This is the system which initiates requests."
+
+        subsystemA = container "Subsystem A" {
+            summary "Requesting subsystem"
+            description "A subsystem within the main system, which is responsible for making the Request"
+
+            caller = component "Server calling module" {
+                summary "Calling component"
+                description "The detailed code component that makes the requests"
+            }
+
+            listenerA = component "Async response handler"
+        }
+    }
+
+    server = system "Sync System B" {
+        summary "Server system"
+        description "The system which is being called and will respond synchronously."
+
+        subsystemB = container "Subsystem B" {
+            summary "Responder subsystem"
+            description "A subsystem in System B which handles requests"
+
+            listenerB = component "Listener" {
+                summary "Listening component"
+                description "The actual module of code responsible for handling the request and sending the response."
+            }
+        }
+    }
+
+    // Synchronous Relationships
+    client.subsystemA.caller -> server.subsystemB.listenerB "Synchronous Request Response, Makes Request" {
+        navigateTo request_response
+        style { line solid }
+    }
+
+}
+

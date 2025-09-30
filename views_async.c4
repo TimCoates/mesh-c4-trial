@@ -1,0 +1,40 @@
+views "Patterns / Async " {
+
+    view async_requestresponse {
+        title "Asynchronous Overview"
+        description "An initial very high level diagram, showing how the User uses the NHS App."
+        include client, client.subsystemA, client.subsystemA.caller, client.subsystemA.listenerA , async_server, async_server.subsystemC, async_server.subsystemC.handler, async_server.subsystemC.sender, async_server.subsystemC.logic
+    }
+
+    
+    dynamic view async_request_response {
+        title "Async Request Response Details"
+
+        client.subsystemA.caller -> async_server.subsystemC.handler "Client opens a request to Server\nAsynchronous Request" {
+            line solid        
+        }
+
+        async_server.subsystemC.handler -> async_server.subsystemC.handler "Validate the request\n(Connection remains open)" {
+            description "The server may or may not validate the request, here we assume it does."
+            line solid
+        }
+
+        async_server.subsystemC.handler -> async_server.subsystemC.logic "We need to respond to this\n(Connection remains open)"
+
+        async_server.subsystemC.handler -> client.subsystemA.caller "'201 Created' response\nAnd close the connection" {
+            description "Server will now work on this request, and respond separately."
+            line dashed
+        }
+
+        async_server.subsystemC.logic -> async_server.subsystemC.logic "The server then produces the response payload - No details are provided where the data is sourced from."
+
+        async_server.subsystemC.logic -> async_server.subsystemC.sender "Response ready"
+
+        async_server.subsystemC.sender -> client.subsystemA.listenerA "Server (is now acting as a client)\nopens a request to the Client (is now acting as a server)\nand sends the Response payload"
+
+        client.subsystemA.listenerA -> async_server.subsystemC.sender "200 OK\nAnd close the connection"
+
+        include client, client.subsystemA, client.subsystemA.caller, client.subsystemA.listenerA , async_server, async_server.subsystemC, async_server.subsystemC.handler, async_server.subsystemC.sender, async_server.subsystemC.logic
+
+    }
+}

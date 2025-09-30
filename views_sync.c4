@@ -1,0 +1,37 @@
+views "Patterns / Synchronous" {
+
+  // apply to all views in this block
+  style * {
+    color muted
+    opacity 20%
+  }
+    view requestresponse {
+        title "Request Response"
+        description "An initial very high level diagram, showing how the User uses the NHS App."
+        include client.subsystemA, server.subsystemB, client.subsystemA.caller
+    }
+
+    dynamic view request_response {
+        title "Synchronous Request Response Details"
+
+        client.subsystemA.caller -> server.subsystemB.listenerB "Calling system makes a http GET request addressed to the server." {
+            description "This connection remains open until the response has come back."
+            line solid
+        }
+        server.subsystemB.listenerB -> server.subsystemB.listenerB "Validate the request\n(Connection remains open)" {
+            description "The server may or may not validate the request, here we assume it does."
+            line solid
+        }
+        server.subsystemB.listenerB -> server.subsystemB.listenerB "Produce the response payload\n(Connection remains open)" {
+            description "The server then produces the response payload - No details are provided where the data is sourced from."
+            line solid
+        }
+        server.subsystemB.listenerB -> client.subsystemA.caller "Send the payload and close the connection" {
+            description "This data is sent back in the same connection that the client opened."
+        }
+        include client, server, client.subsystemA, server.subsystemB, client.subsystemA.caller, server.subsystemB.listenerB
+
+
+    }
+
+}

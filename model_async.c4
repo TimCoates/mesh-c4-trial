@@ -1,0 +1,43 @@
+model {
+    
+    async_server = system "Async System C" {
+        summary "Server system"
+        description "This is te system which is being called and will respond asynchronously."
+
+        subsystemC = container "Subsystem C" {
+            summary "Responder subsystem"
+            description "A subsystem in System C which handles requests asynchronously"
+
+            handler = component "listener" {
+                summary "Request handling component"
+                description "The actual module of code responsible for handling the request and asynchronously sending the response."
+            }
+
+            sender = component "sender" {
+                summary "Response sending component"
+                description "The actual module of code responsible for sending the response."
+            }
+
+            logic = component "Async logic" {
+                summary "Logic to track requests and responses"
+                description ""
+            }
+        }
+    }
+
+    // Asynchronous Relationships
+    async_server.subsystemC.logic -> async_server.subsystemC.handler "Manages"
+    async_server.subsystemC.logic -> async_server.subsystemC.sender "Manages"
+
+    client.subsystemA.caller -> async_server.subsystemC.handler "Asynchronous Request" {
+        navigateTo async_request_response
+        style { line solid }
+    }
+
+    async_server.subsystemC.sender -> client.subsystemA.listenerA "Asynchronous Response" {
+        navigateTo async_request_response
+        style { line solid }
+    }
+
+
+}
